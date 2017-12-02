@@ -1,0 +1,51 @@
+---
+- name: Install common Apache packages
+  apt: "name={{ item }} state=installed update_cache=yes"
+  with_items: "{{ apache_packages }}"
+  register: apache_installed
+  tags:
+    - apache
+
+- name: Install Apache packages for gismapserver
+  apt: "name={{ item }} state=installed update_cache=yes"
+  with_items: "{{ apache_packages_gismap }}"
+  tags:
+    - apache
+
+- name: Configure Apache for gismapserver
+  import_tasks: "config.yml"
+  tags:
+    - apache
+    - apache_config
+
+- name: Remove default vhost in sites-enabled.
+  file:
+    path: "{{ apache_conf_path }}/sites-enabled/{{ apache_default_vhost_filename }}"
+    state: absent
+  notify: restart apache
+  when: "apache_remove_default_vhost"
+  tags:
+    - apache
+
+- name: Ensure Apache has selected state and enabled on boot.
+  service:
+    name: "{{ apache_service }}"
+    state: "{{ apache_state }}"
+    enabled: yes
+  when: "apache_installed.changed"
+  tags:
+    - apache
+
+- name: ACL Permissions
+  command: "{{ item }}"
+  with_items:
+    - /usr/sbin/usermod -a -G shadow www-data
+    - /usr/bin/setfacl -d -m u:www-data:r /etc/parsec/macdb
+    - /usr/bin/setfacl -R -m u:www-data:r /etc/parsec/macdb
+    - /usr/bin/setfacl -m u:www-data:rx /etc/parsec/macdb
+    - /bin/echo "account required pam_tally.so" >> /etc/pam.d/apache2
+    - /usr/bin/setfacl -m u:www-data:rw /var/log/faillog
+  when: "apache_installed.changed"
+  tags:
+    - apache
+

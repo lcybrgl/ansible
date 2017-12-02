@@ -1,0 +1,43 @@
+---
+- name: Copy vim config
+  copy:
+    src: "{{ item.name }}"
+    dest: "{{ item.dest }}"
+    backup: "yes"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+  with_items:
+    - { name: 'vim', dest: '/root/.vimrc' }
+  tags:
+    - vim
+    - dotfiles
+
+- name: Copy screen config
+  copy:
+    src: "{{ item.name }}"
+    dest: "{{ item.dest }}"
+    backup: "yes"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+  with_items:
+    - { name: 'screen', dest: '/root/.screenrc' }
+  tags:
+    - screen
+    - dotfiles
+
+- name: Copy bash config
+  copy:
+    src: "{{ item.name }}"
+    dest: "{{ item.dest }}"
+    backup: "yes"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+  with_items:
+    - { name: 'bashrc', dest: '/root/.bashrc' }
+  tags:
+    - bash
+    - dotfiles
+

@@ -1,0 +1,7 @@
+---
+- name: pgsql_stop
+  service: name=postgresql state=stopped
+
+- name: pgsql_restart
+  service: name=postgresql state=restarted
+

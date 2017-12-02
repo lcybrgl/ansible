@@ -1,0 +1,77 @@
+<VirtualHost *:80>
+        ServerName {{ inventory_hostname }}{{ ald_domain }}
+	ServerAdmin webmaster@localhost
+	DocumentRoot /gip/portal/public
+
+        <Directory />
+{% if kerberos is defined %}
+            AuthType Kerberos
+            KrbAuthRealms REALM
+            KrbServiceName HTTP/{{ inventory_hostname }}{{ ald_domain }}
+            Krb5Keytab /etc/apache2/keytab
+            KrbMethodNegotiate on
+            KrbMethodK5Passwd off
+            require valid-user
+            KrbSaveCredentials on
+            Options FollowSymLinks
+            AllowOverride All
+{% endif %}
+{% if kerberos is not defined %}
+            AuthPAM_Enabled on
+            AuthType Basic
+            AuthName "GIS PAM authentication"
+            require valid-user
+            Options FollowSymLinks
+            AllowOverride All
+{% endif %}
+        </Directory>
+
+        ScriptAlias /cgi-bin/ /gip/mapserver/cgi-bin/
+        <Directory "/gip/mapserver/cgi-bin">
+            AllowOverride None
+            Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+{% if kerberos is defined %}
+            AuthType Kerberos
+            KrbAuthRealms REALM
+            KrbServiceName HTTP/{{ inventory_hostname }}{{ ald_domain }}
+            Krb5Keytab /etc/apache2/keytab
+            KrbMethodNegotiate on
+            KrbMethodK5Passwd off
+            require valid-user
+            KrbSaveCredentials on
+{% endif %}
+{% if kerberos is not defined %}
+            AuthPAM_Enabled on
+            AuthType Basic
+            AuthName "GIS PAM authentication"
+            require valid-user
+{% endif %}
+	</Directory>
+
+        ScriptAlias /api/ /gip/overpass/cgi-bin/
+        <Directory "/gip/overpass/cgi-bin/">
+            AllowOverride None
+            Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+{% if kerberos is defined %}
+            AuthType Kerberos
+            KrbAuthRealms REALM
+            KrbServiceName HTTP/{{ inventory_hostname }}{{ ald_domain }}
+            Krb5Keytab /etc/apache2/keytab
+            KrbMethodNegotiate on
+            KrbMethodK5Passwd off
+            require valid-user
+            KrbSaveCredentials on
+{% endif %}
+{% if kerberos is not defined %}
+            AuthPAM_Enabled on
+            AuthType Basic
+            AuthName "GIS PAM authentication"
+            require valid-user
+{% endif %}
+        </Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	LogLevel warn
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+

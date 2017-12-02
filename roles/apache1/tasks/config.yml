@@ -1,0 +1,36 @@
+---
+- name: Enable Apache common modules
+  file:
+    src: "{{ apache_server_root }}/mods-available/{{ item }}"
+    dest: "{{ apache_server_root }}/mods-enabled/{{ item }}"
+    state: link
+  with_items: "{{ apache_mods }}"
+  notify: restart apache
+
+- name: Enable Apache gisapp modules
+  file:
+    src: "{{ apache_server_root }}/mods-available/{{ item }}"
+    dest: "{{ apache_server_root }}/mods-enabled/{{ item }}"
+    state: link
+  with_items: "{{ apache_mods_gisapp }}"
+  notify: restart apache
+
+- name: Apache Hosts config
+  template:
+    src: "hosts.j2"
+    dest: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart apache
+  when: apache_create_vhosts
+
+- name: Add Hosts symlink
+  file:
+    src: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
+    dest: "{{ apache_conf_path }}/sites-enabled/{{ apache_vhosts_filename }}"
+    state: link
+  notify: restart apache
+  when: apache_create_vhosts
+

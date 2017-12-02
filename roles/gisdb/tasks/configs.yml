@@ -1,0 +1,13 @@
+---
+- name: Configure Postgres DB
+  template: src={{ item.a }} dest=/etc/postgresql/9.3/main/{{ item.b }} owner=postgres group=postgres backup=yes
+  with_items:
+    - { a: 'pgsql_conf.j2', b: "{{ pgsql_conf }}" }
+    - { a: '01_memory.conf.j2', b: "{{ pgsql_memory }}" }
+    - { a: '02_vacuum.conf.j2', b: "{{ pgsql_vacuum }}" }
+    - { a: '03_log.conf.j2', b: "{{ pgsql_log }}" }
+    - { a: '04_replica_master.j2', b: "{{ pgsql_replica }}" }
+    - { a: '05_kerb.conf.j2', b: "{{ pgsql_kerb }}" }
+    - { a: 'pgsql_hba.j2', b: "{{ pgsql_hba }}" }
+  #notify: pgsql_restart
+

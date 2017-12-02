@@ -1,0 +1,61 @@
+<Proxy balancer://mapserver>
+{% for item in groups['gismapserver'] %}
+    BalancerMember http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }} route=instanceOne loadfactor=1
+{% endfor %}
+    ProxySet lbmethod=byrequests stickysession=JSESSIONID|jsessionid
+</Proxy>
+
+<Proxy balancer://app>
+{% for item in groups['gisapp'] %}
+    BalancerMember http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }}:18080 route=instanceOne loadfactor=1
+{% endfor %}
+    ProxySet lbmethod=byrequests stickysession=JSESSIONID|jsessionid
+</Proxy>
+
+<Proxy balancer://appapi>
+{% for item in groups['gisapp'] %}
+    BalancerMember http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }}:18888 route=instanceOne loadfactor=1
+{% endfor %}
+    ProxySet lbmethod=byrequests stickysession=JSESSIONID|jsessionid
+</Proxy>
+
+<Proxy balancer://contrl>
+{% for item in groups['gisapp'] %}
+    BalancerMember http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }} route=instanceOne loadfactor=1
+{% endfor %}
+    ProxySet lbmethod=byrequests stickysession=JSESSIONID|jsessionid
+</Proxy>
+
+<VirtualHost *:80>
+    ServerName {{ gisservername }}{{ ald_domain }}
+
+    ProxyPass "/GISWebServiceSE" "balancer://mapserver/GISWebServiceSE"
+{% for item in groups['gismapserver'] %}
+    ProxyPassReverse "/GISWebServiceSE" "http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }}/GISWebServiceSE"
+{% endfor %}
+
+    ProxyPass "/appservice" "balancer://contrl/appservice"
+{% for item in groups['gisapp'] %}
+    ProxyPassReverse "/appservice" "http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }}/appservice"
+{% endfor %}
+
+    ProxyPass "/gisapi" "balancer://appapi"
+{% for item in groups['gisapp'] %}
+    ProxyPassReverse "/gisapi" "http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }}"
+{% endfor %}
+
+    ProxyPass "/cgi-bin" "balancer://mapserver/cgi-bin"
+{% for item in groups['gismapserver'] %}
+    ProxyPassReverse "/cgi-bin" "http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }}/cgi-bin"
+{% endfor %}
+
+    ProxyPass "/" "balancer://app/"
+{% for item in groups['gisapp'] %}
+    ProxyPassReverse "/" "http://{{ hostvars[item]['inventory_hostname'] }}{{ ald_domain }}"
+{% endfor %}
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+

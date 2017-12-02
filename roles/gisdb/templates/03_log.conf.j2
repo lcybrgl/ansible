@@ -1,0 +1,26 @@
+# --------------------------------
+log_destination = 'syslog'
+syslog_facility = 'LOCAL2'
+logging_collector = on		                        # Enable capturing of stderr and csvlog
+log_filename = 'postgresql-%Y-%m-%d.log'	# log file name pattern,
+log_rotation_size = 10MB		                # Automatic rotation of logfiles will
+log_line_prefix = '%t [%p-%l] %q%u@%d '   		# special values:
+log_timezone = 'W-SU'
+#log_destination = 'stderr'		                # Valid values are combinations of
+#log_directory = 'pg_log'		                # directory where log files are written,
+#log_file_mode = 0600			                # creation mode for log files,
+#log_truncate_on_rotation = off		                # If on, an existing log file with the
+#log_rotation_age = 1d			                # Automatic rotation of logfiles will
+#log_checkpoints = off
+#log_connections = off
+#log_disconnections = off
+#log_duration = off
+#log_error_verbosity = default		                # terse, default, or verbose messages
+#log_hostname = off
+#log_lock_waits = off			                # log lock waits >= deadlock_timeout
+#log_statement = 'none'			                # none, ddl, mod, all
+#log_temp_files = -1			                # log temporary files equal or larger
+#log_min_messages = warning		                # values in order of decreasing detail:
+#log_min_error_statement = error	                # values in order of decreasing detail:
+#log_min_duration_statement = -1	                # -1 is disabled, 0 logs all statements
+#timezone_abbreviations = 'Default'                     # Select the set of available time zone

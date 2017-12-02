@@ -1,0 +1,75 @@
+---
+- name: Install GIP packages for GisMapserver
+  apt: "name={{ item }} state=latest update_cache=yes force=yes"
+  with_items:
+      - gip-mapserver
+      - gip-overpass
+      - gip-routino
+      - gip-mapcache
+      - gip-tinyows
+      - gip-nominatim
+      - gip-mapnik-styles
+  register: gismapserver_gip
+  tags:
+    - gismapserver
+    - gismapserver_gip
+
+- name: Configure gip-mapserver
+  template:
+    src: "{{ item.src }}"
+    dest: "/gip/mapserver/cgi-bin{{ item.dest }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - { src: 'mapserv.ini.j2', dest: '/mapserv.ini' }
+    - { src: 'default.map.j2', dest: '/maps/default.map' }
+    - { src: 'world_bounds_jpeg.map.j2', dest: '/maps/world_bounds_jpeg.map' }
+    - { src: 'world_bounds_png.map.j2', dest: '/maps/world_bounds_png.map' }
+  tags:
+    - gismapserver
+    - gismapserver_config
+
+- name: Configure gip-nominatim
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - { src: 'local.j2', dest: '/gip/nominatim/settings/local.php' }
+    - { src: 'settings.j2', dest: '/gip/nominatim/settings/settings.php' }
+  tags:
+    - gismapserver
+    - gismapserver_config
+
+- name: Configure gip-tinyows
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - { src: 'tinyows.j2', dest: '/gip/mapserver/cgi-bin/tinyows.xml' }
+  tags:
+    - gismapserver
+    - gismapserver_config
+
+- name: Configure gip-mapnik-styles
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+      - { src: 'project_osm-carto.j2', dest: '/gip/openstreetmap-carto/project_osm-carto.xml' }
+  tags:
+    - gismapserver
+    - gismapserver_config

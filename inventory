@@ -1,0 +1,34 @@
+## Example inventory (No DNS)
+[gisapp]
+gisapp1               ansible_host='some_ip'
+gisapp2               ansible_host='some_ip'
+
+[gismapserver]
+gismap1               ansible_host='some_ip'
+gismap2               ansible_host='some_ip'
+gismap3               ansible_host='some_ip'
+gismap4               ansible_host='some_ip'
+
+[gisdb]
+gisdbmain             ansible_host='some_ip'
+#gisdbreserve          ansible_host='some_ip'
+
+[gisfile]
+gisfilemain           ansible_host='some_ip'
+#gisfilereserve        ansible_host='some_ip'
+
+[gisbalance]
+gisbalancemain        ansible_host='some_ip'
+gisbalancereserve     ansible_host='some_ip'
+
+[giscapi]
+giscapimain           ansible_host='some_ip'
+giscapireserve        ansible_host='some_ip'
+
+[gip:children]
+gisfile
+giscapi
+gisapp
+gisdb
+gismapserver
+gisbalance

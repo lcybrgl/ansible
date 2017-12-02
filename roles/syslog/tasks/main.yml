@@ -1,0 +1,22 @@
+---
+- name: Configure Rsyslog Client
+  template: src=rsyslog-client.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes
+  notify: restart rsyslog
+  when: "inventory_hostname != syslog_server"
+  tags:
+    - syslog
+
+- name: Configure Rsyslog Server
+  template: src=rsyslog-server.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes
+  when: "inventory_hostname == syslog_server"
+  notify: restart rsyslog
+  tags:
+    - syslog
+
+- name: Ensure Rsyslog has selected state and enabled on boot.
+  service:
+    name: rsyslog
+    state: started
+    enabled: yes
+  tags:
+    - syslog

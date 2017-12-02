@@ -1,0 +1,14 @@
+---
+- name: Copy scripts
+  copy:
+    src: "{{ item.name }}"
+    dest: "{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  with_items:
+    - { name: 'pgmaster', dest: '/usr/local/bin' }
+    - { name: 'genpasswd', dest: '/usr/local/bin' }
+  tags:
+    - scripts
+

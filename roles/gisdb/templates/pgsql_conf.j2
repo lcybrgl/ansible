@@ -1,0 +1,40 @@
+# ------------------------------------------
+ac_ignore_socket_maclabel       = false
+ac_ignore_server_maclabel       = true
+ac_enable_trusted_owner         = true
+ac_enable_truncate              = true
+ac_enable_sequence_ccr          = true
+ac_enable_copy_to_file          = true
+ac_auto_adjust_macs             = false
+ac_enable_dblink_mac            = false
+#ac_enable_grant_options                = false
+##ac_enable_admin_options                = false
+data_directory = '{{ db_path }}'        		# use data in another directory jjjj
+hba_file = '{{ db_config_path }}/pg_hba.conf'	# host-based authentication file
+ident_file = '{{ db_config_path }}/pg_ident.conf'	# ident configuration file
+external_pid_file = '/var/run/postgresql/9.3-main.pid'			# write an extra PID file
+listen_addresses = '*'
+port = 5432
+default_statistics_target = 100
+unix_socket_directories = '/var/run/postgresql'	        # comma-separated list of directories
+stats_temp_directory = '/var/run/postgresql/9.3-main.pg_stat_tmp'
+timezone = 'W-SU'
+lc_messages = 'ru_RU.UTF-8'		                	# locale for system error message
+lc_monetary = 'ru_RU.UTF-8'		                	# locale for monetary formatting
+lc_numeric = 'ru_RU.UTF-8'		                	# locale for number formatting
+lc_time = 'ru_RU.UTF-8'			                	# locale for time formatting
+default_text_search_config = 'pg_catalog.russian'
+max_locks_per_transaction = 150	                        # min 10
+online_analyze.threshold = 50
+online_analyze.scale_factor = 0.1
+online_analyze.enable = off
+online_analyze.verbose = off
+online_analyze.min_interval = 10000
+online_analyze.table_type = 'temporary'
+plantuner.fix_empty_table = false
+
+include '01_memory.conf'
+include '02_vacuum.conf'
+include '03_log.conf'
+include '04_replica.conf'
+include '05_kerb.conf'

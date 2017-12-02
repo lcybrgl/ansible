@@ -1,0 +1,59 @@
+---
+- name: Copy system config files
+  copy:
+    src: '{{ item.name }}'
+    dest: '{{ item.dest }}'
+    mode: '{{ item.mode }}'
+    backup: 'yes'
+    owner: 'root'
+    group: 'root'
+  with_items:
+      - { name: 'limits', dest: '/etc/security/limits.conf', mode: '0644' }
+      - { name: 'aldpass', dest: '/root/aldpass', mode: '0600' }
+  tags:
+    - system-files
+    - sysconfig
+
+- name: Create hostfile
+  template:
+    src: '{{ item.a }}'
+    dest: '{{ item.b }}'
+    mode: '{{ item.mode }}'
+    backup: 'yes'
+    owner: 'root'
+    group: 'root'
+  with_items:
+      - { a: 'hosts.j2', b: '/etc/hosts', mode: '0644' }
+  tags:
+    - hostfile
+    - sysconfig
+
+- name: Configure repositories
+  template:
+    src: 'sources.list.j2'
+    dest: '/etc/apt/sources.list'
+    backup: 'yes'
+  when: "inventory_hostname not in groups['gisfile']"
+  register: sources_list
+  tags:
+    - repos
+    - sysconfig
+
+- name: Create system user
+  user:
+    name: "{{ sysuser_name }}"
+    state: "present"
+    password: "{{ sysuser_pass }}"
+    shell: "{{ sysuser_shell }}"
+    group: "users"
+    groups: plugdev,video,audio,floppy,cdrom,dialout,fuse
+  tags:
+    - sysuser
+    - sysconfig
+
+- name: Update apt cache
+  apt: update_cache=yes
+  when: sources_list.changed
+  tags:
+    - repos
+    - sysconfig

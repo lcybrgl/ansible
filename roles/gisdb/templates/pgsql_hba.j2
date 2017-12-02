@@ -1,0 +1,24 @@
+# Database administrative login by Unix domain socket
+local   all             {{ db_admin }}                       trust
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     md5
+# IPv4 local connections:
+#
+{% for item in groups['gisdb'] %}
+host    all             all             {{ hostvars[item]['ansible_host'] }}/32        md5
+{% endfor %}
+host    all         postgres            {{ local_network }}           md5
+host    all         bpd_owner           {{ local_network }}           md5
+host    all         bpd_reader           {{ local_network }}           md5
+#
+host    all             all             127.0.0.1/32            md5
+host    all             all             0.0.0.0/0               gss
+# IPv6 local connections:
+#host    all             all             ::1/128                 md5
+local   replication     {{ db_admin }}                       trust
+{% for item in groups['gisdb'] %}
+host    replication     {{ db_admin }}   {{ hostvars[item]['ansible_host'] }}/32       trust
+{% endfor %}
+

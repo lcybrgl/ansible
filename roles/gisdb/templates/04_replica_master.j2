@@ -1,0 +1,6 @@
+hot_standby = off
+#archive_mode = on
+#archive_command = 'test ! -f {{ db_archives }}/%f && cp %p {{ db_archives }}/%f'
+wal_level = hot_standby
+max_wal_senders = 8
+wal_keep_segments = 64

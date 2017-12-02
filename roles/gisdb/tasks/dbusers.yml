@@ -1,0 +1,21 @@
+---
+- name: Set password for bd admin
+  postgresql_user:
+    name: "{{ db_admin }}"
+    password: "{{ db_admin_pass }}"
+    encrypted: yes
+    login_user: "{{ db_admin }}"
+    state: present
+  become: true
+  become_user: "{{ db_admin }}"
+  become_method: sudo
+
+- name: Copy bpd_create script
+  template: src=bpd_create.j2 dest={{ db_admin_home }}/bpd_create.sql owner=postgres group=postgres
+
+- name: Create users, roles, dbs
+  command: psql -f {{ db_admin_home }}/bpd_create.sql
+  become: true
+  become_user: "{{ db_admin }}"
+  become_method: sudo
+

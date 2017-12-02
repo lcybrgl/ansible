@@ -1,0 +1,24 @@
+---
+- name: Create Postgres data dir
+  file: dest={{ db_path }} state=directory owner={{ db_admin }} group={{ db_admin }}
+  register: new_datadir
+
+- name: Stop Postgresql
+  service: name=postgresql state=stopped
+  register: postgres_stopped
+  when: new_datadir.changed
+
+- name: Kill postgres process
+  command: killall postgres
+  ignore_errors: yes
+  when: new_datadir.changed
+
+- name: Initdb for Postgres
+  command: "/usr/lib/postgresql/9.3/bin/initdb -D {{ db_path }}"
+  become: yes
+  become_user: "{{ db_admin }}"
+  become_method: sudo
+  when: new_datadir.changed
+
+- name: Restart Postgresql
+  service: name=postgresql state=restarted

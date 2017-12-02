@@ -1,0 +1,24 @@
+<IfModule mapcache_module>
+    <Directory /gip/data/tiles>
+        Order Allow,Deny
+        Allow from all
+        AllowOverride None
+{% if kerberos is defined %}
+        AuthType Kerberos
+        KrbAuthRealms REALM
+        KrbServiceName HTTP/{{ inventory_hostname }}{{ ald_domain }}
+        Krb5Keytab /etc/apache2/keytab
+        KrbMethodNegotiate on
+        KrbMethodK5Passwd off
+        require valid-user
+        KrbSaveCredentials on
+{% endif %}
+{% if kerberos is not defined %}
+        AuthPAM_Enabled on
+        AuthType Basic
+        AuthName "GIS PAM authentication"
+        require valid-user
+{% endif %}
+    </Directory>
+     MapCacheAlias /mapcache "/gip/data/mapcache.xml"
+</IfModule>

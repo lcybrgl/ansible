@@ -1,0 +1,88 @@
+<IfModule mod_tile.c>
+    <Location /osm_bright/ >
+{% if kerberos is defined %}
+            AuthType Kerberos
+            KrbAuthRealms REALM
+            KrbServiceName HTTP/{{ inventory_hostname }}{{ ald_domain }}
+            Krb5Keytab /etc/apache2/keytab
+            KrbMethodNegotiate on
+            KrbMethodK5Passwd off
+            require valid-user
+            KrbSaveCredentials on
+            Options FollowSymLinks
+            AllowOverride All
+{% endif %}
+{% if kerberos is not defined %}
+            AuthPAM_Enabled on
+            AuthType Basic
+            AuthName "GIS PAM authentication"
+            require valid-user
+            Options FollowSymLinks
+            AllowOverride All
+{% endif %}
+    </Location>
+
+LoadTileConfigFile /etc/renderd.conf
+ModTileRenderdSocketName /var/run/renderd.sock
+ModTileEnableStats Off
+ModTileBulkMode Off
+# ModTileBulkMode On
+ModTileRequestTimeout 20
+ModTileMissingRequestTimeout 90
+
+# If tile is out of date, don't re-render it if past this load threshold (users gets old tile)
+# ModTileMaxLoadOld 360
+ModTileMaxLoadOld 2
+
+# If tile is missing, don't render it if past this load threshold (user gets 404 error)
+ModTileMaxLoadMissing 10
+
+# The CacheExtended parameters overwrite all other caching parameters (including CacheDurationMax)
+# for tiles being requested via the hostname CacheExtendedHostname
+# ModTileCacheExtendedHostname cache.tile.openstreetmap.org
+
+# 10 years ( 3650 days )
+# ModTileCacheExtendedDuration 315360000
+
+# Sets how old an expired tile has to be to be considered very old and therefore get elevated priority in rendering
+ModTileVeryOldThreshold 315360000
+
+# Upper bound on the length a tile will be set cacheable, which takes
+# precedence over other settings of cacheing
+ModTileCacheDurationMax 315360000
+
+# Sets the time tiles can be cached for that are known to by outdated and have been
+# sent to renderd to be rerendered. This should be set to a value corresponding
+# roughly to how long it will take renderd to get through its queue. There is an additional
+# fuzz factor on top of this to not have all tiles expire at the same time
+# ModTileCacheDurationDirty 900
+ModTileCacheDurationDirty 315360000
+
+# Specify the minimum time mod_tile will set the cache expiry to for fresh tiles. There
+# is an additional fuzz factor of between 0 and 3 hours on top of this.
+# ModTileCacheDurationMinimum 10800
+ModTileCacheDurationMinimum 315360000
+
+# Lower zoom levels are less likely to change noticeable, so these could be cached for longer
+# without users noticing much.
+# The heuristic offers three levels of zoom, Low, Medium and High, for which different minimum
+# cacheing times can be specified.
+
+#Specify the zoom level below  which Medium starts and the time in seconds for which they can be cached
+# ModTileCacheDurationMediumZoom 13 86400
+ModTileCacheDurationMediumZoom 13 315360000
+
+#Specify the zoom level below which Low starts and the time in seconds for which they can be cached
+# ModTileCacheDurationLowZoom 9 518400
+ModTileCacheDurationLowZoom 9 315360000
+
+# A further heuristic to determine cacheing times is when was the last time a tile has changed.
+# If it hasn't changed for a while, it is less likely to change in the immediate future, so the
+# tiles can be cached for longer.
+# For example, if the factor is 0.20 and the tile hasn't changed in the last 5 days, it can be cached
+# for up to one day without having to re-validate.
+# ModTileCacheLastModifiedFactor 0.20
+
+# ModTileThrottlingTiles 10000 1
+# ModTileThrottlingRenders 128 0.2
+</IfModule>

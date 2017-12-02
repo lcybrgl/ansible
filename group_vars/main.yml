@@ -1,0 +1,24 @@
+---
+# Example common vars 
+ntp_server: ''
+repo_astra: ''
+repo_astradev: ''
+repo_gip: ''
+
+ald_domain: ''
+ald_server: ''
+ald_server_ip: ''
+
+local_network: ''
+file_server: ''
+file_server_ip: ''
+syslog_server: ''
+gisservername: ''
+
+gisapp_host: ''
+gisdb_host: ''
+
+sysuser_name: ''
+sysuser_pass: ''
+sysuser_pass_plain: ''
+sysuser_shell: ''

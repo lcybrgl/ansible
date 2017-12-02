@@ -1,0 +1,27 @@
+---
+- name: Install Postgres packages
+  apt: "name={{ item }} state=installed update_cache=yes"
+  with_items:
+    - postgresql-9.3
+    - postgresql-9.3-postgis-2.1
+    - postgresql-9.3-postgis-2.1-scripts
+    - postgis
+    - postgresql-contrib-9.3
+    - python-psycopg2
+    - libgdal1h
+    - libgeos-c1
+  register: pgsql_installed
+
+- name: Creating users
+  user:
+    name: "{{ item.a }}"
+    state: present
+    shell: /bin/bash
+    group: users
+    groups: plugdev,video,audio,floppy,cdrom,dialout,fuse
+    password: "{{ item.b }}"
+  when: pgsql_installed.changed
+  with_items:
+    - { a: "{{ db_user1 }}", b: "{{ db_user1_pass }}" }
+    - { a: "{{ db_user2 }}", b: "{{ db_user2_pass }}" }
+

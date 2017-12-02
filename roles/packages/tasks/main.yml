@@ -1,0 +1,15 @@
+---
+- name: Installing Default Packages
+  apt: "name={{ item }} state=installed update_cache=yes"
+  with_items:
+    - mc
+    - rsync
+    - vim
+    - wget
+    - curl
+    - screen
+    - htop
+    - ntp
+    - ntpdate
+  tags:
+      - packages

@@ -1,0 +1,23 @@
+---
+# Postgres default system vars
+db_user1: ''
+db_user2: ''
+db_user1_pass: ''
+db_user2_pass: ''
+db_admin: 'postgres'
+db_admin_pass: ''
+db_admin_home: '/var/lib/postgresql'
+db_config_path: '/etc/postgresql/9.3/main'
+db_path: '/gip/postgres/main'
+db_archives: '/gip/postgres_archives'
+db_dumps: '/gip/postgres_dumps'
+db_backups: '/gip/postgres_backups'
+
+# Postgres default config vars
+pgsql_conf: 'postgresql.conf'
+pgsql_memory: '01_memory.conf'
+pgsql_vacuum: '02_vacuum.conf'
+pgsql_log: '03_log.conf'
+pgsql_replica: '04_replica.conf'
+pgsql_kerb: '05_kerb.conf'
+pgsql_hba: 'pg_hba.conf'

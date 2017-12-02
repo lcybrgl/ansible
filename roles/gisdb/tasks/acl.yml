@@ -1,0 +1,12 @@
+---
+- name: ACL Permissions
+  command: "{{ item }}"
+  with_items:
+    - /usr/sbin/usermod -a -G shadow postgres
+    - /usr/bin/setfacl -d -m u:postgres:r /etc/parsec/macdb
+    - /usr/bin/setfacl -R -m u:postgres:r /etc/parsec/macdb
+    - /usr/bin/setfacl -m u:postgres:rx /etc/parsec/macdb
+    - /usr/bin/setfacl -d -m u:postgres:r /etc/parsec/capdb
+    - /usr/bin/setfacl -R -m u:postgres:r /etc/parsec/capdb
+    - /usr/bin/setfacl -m u:postgres:rx /etc/parsec/capdb
+

@@ -1,0 +1,56 @@
+---
+- name: Install GIP packages for GisApp
+  apt: "name={{ item }} state=latest update_cache=yes force=yes"
+  with_items:
+      - gip-node
+      - gip-node-app
+      - gip-admin
+  register: gisapp_gip
+  tags:
+    - gisapp
+    - gisapp_gip
+
+- name: Configure gip-admin
+  template:
+    src: "{{ item.src }}"
+    dest: "/gip/portal/config/{{ item.dest }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - { src: 'dbCms.php.j2', dest: 'dbCms.php' }
+    - { src: 'dbGip.php.j2', dest: 'dbGip.php' }
+    - { src: 'dbView.php.j2', dest: 'dbView.php' }
+    - { src: 'params.php.j2', dest: 'params.php' }
+  tags:
+    - gisapp
+    - gisapp_config
+
+- name: Create sysuser AuthToken
+  shell: "echo -n '{{ sysuser_name }}:{{ sysuser_pass_plain }}' | base64"
+  register: "authtoken"
+  tags:
+    - gisapp
+    - gisapp_config
+
+- name: Configure gip-app
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - { src: 'gisapp/client-side-config.json.j2', dest: '/gip/node/app/config/client-side-config.json' }
+    - { src: 'gisapp/server-side-config.json.j2', dest: '/gip/node/app/config/server-side-config.json' }
+    - { src: 'gisapp/testapi.htm.j2', dest: '/gip/node/app/testapi.htm' }
+  vars:
+    - token: "{{ authtoken.stdout }}"
+  notify: restart gisapp
+  tags:
+    - gisapp
+    - gisapp_config
+
+

@@ -1,0 +1,43 @@
+---
+- hosts: gip
+  remote_user: root
+  roles:
+    - sysconfig
+    - dotfiles
+    - scripts
+    - packages
+    - ntp
+
+# Edit this one
+#- hosts: gisfile
+#  remote_user: root
+#  roles:
+#    - gisfile
+
+- hosts: gisdb
+  remote_user: root
+  roles:
+    - gisdb
+
+- hosts: gismapserver
+  remote_user: root
+  roles:
+    - apache-gismap
+    - gismapserver
+
+- hosts: gisapp
+  remote_user: root
+  roles:
+    - apache-gisapp
+    - gisapp
+
+- hosts: gisbalance
+  remote_user: root
+  roles:
+    - apache-gisbal
+
+- hosts: gip
+  remote_user: root
+  roles:
+    - syslog
+

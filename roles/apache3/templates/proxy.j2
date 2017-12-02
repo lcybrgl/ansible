@@ -1,0 +1,31 @@
+<IfModule mod_proxy.c>
+#ProxyRequests On
+ProxyPreserveHost On
+ProxyVia On
+<Proxy *>
+{% if kerberos is defined %}
+        AuthType Kerberos
+        KrbAuthRealms REALM
+        KrbServiceName HTTP/{{ gisservername }}{{ ald_domain }}
+        Krb5Keytab /etc/apache2/keytab
+        KrbMethodNegotiate on
+        KrbMethodK5Passwd off
+        require valid-user
+        KrbSaveCredentials on
+{% endif %}
+{% if kerberos is not defined %}
+        AuthPAM_Enabled on
+        AuthType Basic
+        AuthName "GIS PAM authentication"
+        require valid-user
+{% endif %}
+
+</Proxy>
+
+# Enable/disable the handling of HTTP/1.1 "Via:" headers.
+# ("Full" adds the server version; "Block" removes all outgoing Via: headers)
+# Set to one of: Off | On | Full | Block
+#ProxyVia Off
+
+</IfModule>
+

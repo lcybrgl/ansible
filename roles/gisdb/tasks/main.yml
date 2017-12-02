@@ -1,0 +1,38 @@
+---
+- name: Install Postgres packages
+  import_tasks: install.yml
+  register: pgsql_installed
+  tags:
+    - pgsql_install
+    - pgsql
+
+- name: Change Postgres ACL Permissions
+  import_tasks: acl.yml
+  register: pgsql_acl
+  when: pgsql_installed.changed
+  tags:
+    - pgsql_acl
+    - pgsql
+
+- name: Create Postgres Data dir
+  import_tasks: datadir.yml
+  register: pgsql_datadir
+  when: pgsql_installed.changed
+  tags:
+    - pgsql_datadir
+    - pgsql
+
+- name: Create Postgres Users
+  import_tasks: dbusers.yml
+  register: pgsql_dbusers
+  when: pgsql_installed.changed
+  tags:
+    - pgsql_dbusers
+    - pgsql
+
+- name: Postgres configs
+  import_tasks: configs.yml
+  register: db_configs
+  tags:
+    - db_configs
+    - pgsql

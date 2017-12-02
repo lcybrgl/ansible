@@ -1,0 +1,40 @@
+---
+- name: Install ntp
+  apt: "name={{ item }} state=installed update_cache=yes"
+  with_items:
+      - ntp
+      - ntpdate
+  tags:
+    - ntp_install
+    - ntp
+
+- name: Configure ntp
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf backup=yes
+  register: ntp_config
+  tags:
+    - ntp_config
+    - ntp
+
+- name: Stop ntp service
+  service: name=ntp state=stopped
+  when: ntp_config.changed
+  tags:
+    - ntp
+
+- name: Update time
+  command: ntpdate {{ ntp_server }}
+  when: ntp_config.changed
+  tags:
+    - ntp
+
+- name: Start ntp service
+  service: name=ntp state=started
+  when: ntp_config.changed
+  tags:
+    - ntp
+
+- name: Enable ntp
+  service: name=ntp state=started enabled=on
+  tags:
+    - ntp
+    - ntp_enable

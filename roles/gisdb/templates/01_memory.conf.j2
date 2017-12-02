@@ -1,0 +1,16 @@
+# ------------------------------------
+max_connections = 100
+maintenance_work_mem = 1GB
+shared_buffers = 4GB                                    # amount of memory to use for Postgresql, 1/4 of available mem is ok
+effective_cache_size = 5GB                             # amount of memory used by system including shared_buffers, 3/4 of available mem is ok
+work_mem = 1024kB
+checkpoint_segments = 32                                # create a checkpoint every 512MB, if 64 - 1GB
+checkpoint_completion_target = 0.9                      # aim to finish by the time 90% of the next checkpoint is here (0.5 - 50%)
+fsync = on				                # turns forced synchronization on or off
+synchronous_commit = off	                        # synchronization level
+effective_io_concurrency = 1		                # 1-1000; 0 disables prefetching
+wal_buffers = 16MB
+full_page_writes = on			                # recover from partial page writes
+default_statistics_target = 100
+temp_buffers = 8MB			                # min 800kB
+temp_file_limit = -1			                # limits per-session temp file space
